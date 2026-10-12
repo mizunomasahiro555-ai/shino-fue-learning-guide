@@ -276,7 +276,7 @@
     }
   }
 
-  function saveState() {
+  function escapeHTML(value) {\n    return String(value || "").replace(/[&<>"]/g, function(c) { return {"&":"&amp;","<":"&lt;",">":"&gt;","\\\"":"&quot;"}[c]; });\n  }\n\n  function saveState() {
     try {
       localStorage.setItem('shinobue_app_state', JSON.stringify(state));
     } catch(e) {}
@@ -458,7 +458,7 @@
           <p>教材では、指打ちを旋律に組み合わせる練習で、唱え方を指の動きと結びつけています。</p>
           <div class="sheet-box"><strong>ヒャ・ヒュ・ヒョ</strong><br>ハネルの動きと合わせる唱え方の例。<br><br><strong>ラ・リ・ル・レ・ロ</strong><br>はたくの動きと合わせる唱え方の例。</div>
           <div class="note-box">音名そのものではなく、動きを意識する唱え方として教材で紹介されています。実際の当て方は、使う譜面や教える方に確認してください。笛を吹かず、唱え方と指の動きだけを合わせてもかまいません。</div>
-          <div class="btn-group"><button class="primary-btn" onclick="navigate('q10')">体験を振り返る</button><button class="secondary-btn" onclick="navigate('q7')">戻る</button></div>`;
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q9')">体験を振り返る</button><button class="secondary-btn" onclick="navigate('q7')">戻る</button></div>`;
         break;
 
       case 'q9':
@@ -474,7 +474,7 @@
           <span class="badge">質問 10 / 11</span>
           <h2>いま、数字符をどのように説明できそうですか?</h2>
           <p>ご自身の言葉で一言書いてみてください（任意）。</p>
-          <textarea id="q10_input" placeholder="例: 数字符は指の押さえ方と音の高さを表すもの、など">${state.answers.q10}</textarea>
+          <textarea id="q10_input" placeholder="例: 数字符は指の押さえ方と音の高さを表すもの、など">${escapeHTML(state.answers.q10)}</textarea>
           <div class="btn-group">
             <button class="primary-btn" onclick="saveQ10AndNext('q11')">次へ進む</button>
             <button class="secondary-btn" onclick="navigate('q9')">戻る</button>
@@ -529,7 +529,7 @@
           <h2>${resultType}</h2>
           <p>${resultSummary}</p>
           
-          <div class="sheet-box" id="sheet-content">${sheetText}</div>\n<div class="btn-group" style="flex-direction:column; gap:10px;">
+          <div class="sheet-box" id="sheet-content">${escapeHTML(sheetText)}</div>\n<div class="btn-group" style="flex-direction:column; gap:10px;">
             <button class="primary-btn" onclick="copySheet()">チェックシートをテキストコピー</button>
             <button class="secondary-btn" onclick="navigate('ai_memo')" style="width:100%;">AI復習メモを作成する</button>
             <button class="secondary-btn" onclick="navigate('cta')" style="width:100%;">次の案内へ進む</button>
@@ -543,7 +543,7 @@
           <span class="badge">AI復習メモ</span>
           <h2>AI復習メモを作成する</h2>
           <p>下のテキストをコピーし、ご自身のChatGPT・Claude・Geminiに貼り付けると、あなた専用の復習アドバイスがもらえます。（氏名やメールアドレスは含まれません）</p>
-          <div class="sheet-box" id="ai-memo-content">${aiMemoText}</div>
+          <div class="sheet-box" id="ai-memo-content">${escapeHTML(aiMemoText)}</div>
           <div class="btn-group" style="flex-direction:column; gap:10px;">
             <button class="primary-btn" onclick="copyAiMemo()">AI復習メモをコピー</button>
             <button class="secondary-btn" onclick="navigate('result')" style="width:100%;">結果画面に戻る</button>
