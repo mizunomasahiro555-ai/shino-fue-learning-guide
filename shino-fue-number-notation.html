@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数字符(篠笛譜)ひもとき体験</title>
+  <style>
+    :root {
+      --bg-color: #fcfbfa;
+      --card-bg: #ffffff;
+      --text-color: #2c2a29;
+      --sub-text: #6b6661;
+      --primary: #8c3b2e; /* 和の落ち着いた赤茶 */
+      --primary-hover: #732f24;
+      --accent: #d9c5b2;
+      --border-color: #e6e2de;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Meiryo UI", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      display: flex;
+      justify-content: center;
+      padding: 12px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 414px; /* スマートフォン最適幅 */
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      min-height: 90vh;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+    }
+
+    .header-title {
+      font-size: 13px;
+      color: var(--sub-text);
+      font-weight: bold;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .progress-bar-container {
+      height: 4px;
+      background: var(--border-color);
+      width: 100%;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    main {
+      padding: 24px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--text-color);
+      line-height: 1.4;
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: var(--text-color);
+    }
+
+    p {
+      font-size: 14px;
+      color: var(--sub-text);
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #f4ede2;
+      color: var(--primary);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .option-btn {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 14px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover, .option-btn.selected {
+      border-color: var(--primary);
+      background: #fdfaf8;
+    }
+
+    textarea, input[type="email"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 20px;
+      resize: vertical;
+    }
+
+    textarea {
+      height: 100px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 20px;
+    }
+
+    .primary-btn {
+      flex: 1;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .primary-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary-btn {
+      background: #fff;
+      color: var(--sub-text);
+      border: 1px solid var(--border-color);
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .note-box {
+      background: #f9f8f6;
+      border-left: 3px solid var(--primary);
+      padding: 12px;
+      font-size: 12px;
+      color: var(--sub-text);
+      margin-bottom: 20px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .feedback-box {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+    }
+    .feedback-box.correct {
+      background: #eef7ed;
+      color: #2e6b2e;
+      border: 1px solid #c7e0c7;
+    }
+    .feedback-box.incorrect {
+      background: #fdf2f2;
+      color: #9c3c3c;
+      border: 1px solid #f2c7c7;
+    }
+
+    .sheet-box {
+      background: #fcfbfa;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    .svg-container {
+      text-align: center;
+      margin: 15px 0;
+      background: #f8f6f4;
+      padding: 12px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+  <!-- 動的描画領域 -->
+</div>
+
+<script>
+  /* === 設定ファイル (JSON / オブジェクト構造: 後から事業者による差し替えが可能) === */
+  const config = {
+    providerName: "仙太郎",
+    melodySample: ["ト", "イ", "ロ", "ハ"], // サンプル数字符データ（要差し替え）
+    ctaUrl: "https://example.com/course-shinobue", // 講座紹介ページURL（要差し替え）
+    courseTitle: "超速習!3ヶ月で学ぶ 篠笛演奏の基本技術と基礎知識"
+  };
+
+  // アプリケーション状態管理
+  let state = {
+    currentScreen: 'start', // start, q1, q2, q3, q4, q5, rule, q6, q7, q8, q9, q10, q11, result, save, ai_memo, cta
+    answers: {
+      q1: '', q2: '', q3: '', q4: '', q5: '',
+      q6: '', q7: '', q8: '', q9: '', q10: '', q11: '', q12: ''
+    },
+    quizScores: {
+      q6: null, q7: null, q8: null, q9: null
+    },
+    stumbledPoints: []
+  };
+
+  // LocalStorageから状態復元
+  function loadState() {
+    const saved = localStorage.getItem('shinobue_app_state');
+    if (saved) {
+      try { state = JSON.parse(saved); } catch(e) {}
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem('shinobue_app_state', JSON.stringify(state));
+    } catch(e) {}
+  }
+
+  function resetAll() {
+    if (confirm("最初からやり直しますか？回答内容がリセットされます。")) {
+      localStorage.removeItem('shinobue_app_state');
+      state = {
+        currentScreen: 'start',
+        answers: { q1: '', q2: '', q3: '', q4: '', q5: '', q6: '', q7: '', q8: '', q9: '', q10: '', q11: '', q12: '' },
+        quizScores: { q6: null, q7: null, q8: null, q9: null },
+        stumbledPoints: []
+      };
+      render();
+    }
+  }
+
+  // 画面描画ルーター
+  function render() {
+    saveState();
+    const app = document.getElementById('app');
+    let html = '';
+
+    // ヘッダー共通部分
+    const screensWithProgress = ['q1','q2','q3','q4','q5','rule','q6','q7','q8','q9','q10','q11'];
+    let progressPercent = 0;
+    if (screensWithProgress.includes(state.currentScreen)) {
+      const idx = screensWithProgress.indexOf(state.currentScreen);
+      progressPercent = Math.round(((idx + 1) / screensWithProgress.length) * 100);
+    } else if (['result','save','ai_memo','cta'].includes(state.currentScreen)) {
+      progressPercent = 100;
+    }
+
+    html += `
+      <header>
+        <span class="header-title">数字符(篠笛譜)ひもとき体験</span>
+        <button class="reset-btn" onclick="resetAll()">最初からやり直す</button>
+      </header>
+      <div class="progress-bar-container">
+        <div class="progress-bar" style="width: ${progressPercent}%;"></div>
+      </div>
+      <main id="main-content">
+    `;
+
+    // 画面ごとのコンテンツ切り替え
+    switch(state.currentScreen) {
+      case 'start':
+        html += `
+          <span class="badge">祭囃子・神楽・獅子舞・篠笛・和太鼓の専門家 仙太郎</span>
+          <h1>数字符、10分で「読める」に変わる。</h1>
+          <p>笛を吹く前に、まず運指と譜面を理解する。</p>
+          <div class="note-box">
+            数字符の意味を、短い旋律を使って「見て・選んで・確かめる」体験です。笛がなくても取り組めます。<br><br>
+            ※この体験は私の基準で説明しています。流派・地域・笛の調子によって表記が異なる場合があります。
+          </div>
+          <div style="font-size:12px; color:var(--sub-text); margin-bottom:20px;">所要時間: 約10分</div>
+          <div class="btn-group">
+            <button class="primary-btn" onclick="navigate('q1')">数字符を読んでみる</button>
+          </div>
+        `;
+        break;
+
+      case 'q1':
+        html += `
+          <span class="badge">質問 1 / 11</span>
+          <h2>篠笛は手元にありますか?</h2>
+          <p>笛の有無に合わせて、説明の言い回しを切り替えます。</p>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q1==='持っている'?'selected':''}" onclick="setAnswer('q1','持っている', 'q2')">持っている</button>
+            <button class="option-btn ${state.answers.q1==='これから買う予定'?'selected':''}" onclick="setAnswer('q1','これから買う予定', 'q3')">これから買う予定</button>
+            <button class="option-btn ${state.answers.q1==='まだ持っていない・検討中'?'selected':''}" onclick="setAnswer('q1','まだ持っていない・検討中', 'q3')">まだ持っていない・検討中</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('start')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q2':
+        html += `
+          <span class="badge">質問 2 / 11</span>
+          <h2>持っている笛の調子は分かりますか?</h2>
+          <p>この体験では数字符と運指の対応の基本を学びます。</p>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q2==='六本調子'?'selected':''}" onclick="setAnswer('q2','六本調子', 'q3')">六本調子</button>
+            <button class="option-btn ${state.answers.q2==='七本調子'?'selected':''}" onclick="setAnswer('q2','七本調子', 'q3')">七本調子</button>
+            <button class="option-btn ${state.answers.q2==='八本調子'?'selected':''}" onclick="setAnswer('q2','八本調子', 'q3')">八本調子</button>
+            <button class="option-btn ${state.answers.q2==='その他・分からない'?'selected':''}" onclick="setAnswer('q2','その他・分からない', 'q3')">その他・分からない</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q1')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q3':
+        html += `
+          <span class="badge">質問 3 / 11</span>
+          <h2>篠笛の経験は、どれに近いですか?</h2>
+          <p>経験度に応じて、基本ルールの説明やクイズの難易度を調整します。</p>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q3==='まったくの初めて'?'selected':''}" onclick="setAnswer('q3','まったくの初めて', 'q4')">まったくの初めて</button>
+            <button class="option-btn ${state.answers.q3==='少し吹いたことがある'?'selected':''}" onclick="setAnswer('q3','少し吹いたことがある', 'q4')">少し吹いたことがある</button>
+            <button class="option-btn ${state.answers.q3==='吹いたことはあるが譜面は読めない'?'selected':''}" onclick="setAnswer('q3','吹いたことはあるが譜面は読めない', 'q4')">吹いたことはあるが、譜面は読めない</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('${state.answers.q1==='持っている'?'q2':'q1'}')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q4':
+        html += `
+          <span class="badge">質問 4 / 11</span>
+          <h2>いちばん学びたいのはどれですか?</h2>
+          <p>関心のある場面に合わせたアドバイスを結果画面でお伝えします。</p>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q4==='祭囃子'?'selected':''}" onclick="setAnswer('q4','祭囃子', 'q5')">祭囃子</button>
+            <button class="option-btn ${state.answers.q4==='神楽'?'selected':''}" onclick="setAnswer('q4','神楽', 'q5')">神楽</button>
+            <button class="option-btn ${state.answers.q4==='獅子舞'?'selected':''}" onclick="setAnswer('q4','獅子舞', 'q5')">獅子舞</button>
+            <button class="option-btn ${state.answers.q4==='民謡・その他の曲'?'selected':''}" onclick="setAnswer('q4','民謡・その他の曲', 'q5')">民謡・その他の曲</button>
+            <button class="option-btn ${state.answers.q4==='まだ決めていない'?'selected':''}" onclick="setAnswer('q4','まだ決めていない', 'q5')">まだ決めていない</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q3')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q5':
+        html += `
+          <span class="badge">質問 5 / 11</span>
+          <h2>数字符について、今のイメージに近いものは?</h2>
+          <p>体験前の理解度を確認します。</p>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q5==='全く分からない'?'selected':''}" onclick="setAnswer('q5','全く分からない', 'rule')">数字が何を表すのか全く分からない</button>
+            <button class="option-btn ${state.answers.q5==='関係することは知っている'?'selected':''}" onclick="setAnswer('q5','関係することは知っている', 'rule')">数字が指の押さえ方に関係することは知っている</button>
+            <button class="option-btn ${state.answers.q5==='何となく読めるが自信がない'?'selected':''}" onclick="setAnswer('q5','何となく読めるが自信がない', 'rule')">何となく読めるが自信がない</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q4')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'rule':
+        const isDetailed = (state.answers.q3 === 'まったくの初めて' || state.answers.q5 === '全く分からない');
+        html += `
+          <span class="badge">基本ルール解説 (${isDetailed ? '丁寧版' : '短縮版'})</span>
+          <h2>数字符の基本</h2>
+          <p>${isDetailed ? 'まずはゆっくり、数字と指の対応を確認しましょう。' : '数字符の基本構造を確認します。'}</p>
+          <div class="note-box">
+            <strong>1. 数字が示すもの</strong><br>
+            篠笛の数字符における数字は、主に<strong>「どの指穴を押さえるか」</strong>と<strong>「出る音の高さ」</strong>の対応を表しています。<br><br>
+            <strong>2. 音の高さの捉え方</strong><br>
+            数字の大小や並びによって、音が高くなるか低くなるかを読み取ります。笛を実際に吹く前に、まずはこのルールを頭に思い描くことが第一歩です。
+          </div>
+          <div class="btn-group">
+            <button class="primary-btn" onclick="navigate('q6')">確認クイズへ進む</button>
+            <button class="secondary-btn" onclick="navigate('q5')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q6':
+        html += `
+          <span class="badge">確認クイズ 1 / 4</span>
+          <h2>数字符の「数字」は、何を表していますか?</h2>
+          <div class="options-list">
+            <button class="option-btn" onclick="answerQuiz('q6', 1, false, '曲のテンポではありません。')">曲のテンポ</button>
+            <button class="option-btn" onclick="answerQuiz('q6', 2, true, '正解です！数字は押さえる指と音の高さの対応を表します。')">押さえる指と、出る音の高さの対応</button>
+            <button class="option-btn" onclick="answerQuiz('q6', 3, false, '息の強さではなく指の押さえ方を示しています。')">息の強さ</button>
+            <button class="option-btn" onclick="answerQuiz('q6', 4, false, '曲のジャンルではありません。')">曲のジャンル</button>
+          </div>
+          ${renderQuizFeedback('q6', 'q7')}
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('rule')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q7':
+        html += `
+          <span class="badge">確認クイズ 2 / 4</span>
+          <h2>最初の数字に対応する運指図はどれですか?</h2>
+          <div class="svg-container">
+            <svg width="160" height="60" viewBox="0 0 160 60">
+              <rect x="10" y="25" width="140" height="10" fill="#d9c5b2" rx="5"/>
+              <circle cx="40" cy="30" r="5" fill="#8c3b2e"/>
+              <circle cx="70" cy="30" r="5" fill="#fff" stroke="#8c3b2e" stroke-width="2"/>
+              <circle cx="100" cy="30" r="5" fill="#8c3b2e"/>
+              <text x="80" y="55" font-size="10" text-anchor="middle" fill="#6b6661">運指図のサンプル</text>
+            </svg>
+          </div>
+          <div class="options-list">
+            <button class="option-btn" onclick="answerQuiz('q7', 1, false, '違います。黒丸の穴の押さえ方を確認しましょう。')">運指図A</button>
+            <button class="option-btn" onclick="answerQuiz('q7', 2, true, '正解です！指定された数字の正しい指の押さえ方です。')">運指図B</button>
+            <button class="option-btn" onclick="answerQuiz('q7', 3, false, '違います。')">運指図C</button>
+            <button class="option-btn" onclick="answerQuiz('q7', 4, false, '違います。')">運指図D</button>
+          </div>
+          ${renderQuizFeedback('q7', 'q8')}
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q6')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q8':
+        html += `
+          <span class="badge">確認クイズ 3 / 4</span>
+          <h2>2つ目の数字は、1つ目と比べて音が高くなりますか?低くなりますか?</h2>
+          <div class="options-list">
+            <button class="option-btn" onclick="answerQuiz('q8', 1, true, '正解です！数字の進みに伴う音の高さの変化をとらえられています。')">高くなる</button>
+            <button class="option-btn" onclick="answerQuiz('q8', 2, false, '低くなるわけではありません。')">低くなる</button>
+            <button class="option-btn" onclick="answerQuiz('q8', 3, false, '同じ音ではありません。')">同じ</button>
+          </div>
+          ${renderQuizFeedback('q8', 'q9')}
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q7')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q9':
+        html += `
+          <span class="badge">確認クイズ 4 / 4</span>
+          <h2>短い数字符の並びを、指の押さえ方に正しく置き換えたものは?</h2>
+          <div class="options-list">
+            <button class="option-btn" onclick="answerQuiz('q9', 1, false, '並びの順序を確認してみましょう。')">並びA</button>
+            <button class="option-btn" onclick="answerQuiz('q9', 2, false, '指の対応をもう一度見直してみましょう。')">並びB</button>
+            <button class="option-btn" onclick="answerQuiz('q9', 3, true, '正解です！4音の並びを正しく運指に置き換えられました。')">並びC</button>
+            <button class="option-btn" onclick="answerQuiz('q9', 4, false, '違います。')">並びD</button>
+          </div>
+          ${renderQuizFeedback('q9', 'q10')}
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q8')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q10':
+        html += `
+          <span class="badge">質問 10 / 11</span>
+          <h2>いま、数字符をどのように説明できそうですか?</h2>
+          <p>ご自身の言葉で一言書いてみてください（任意）。</p>
+          <textarea id="q10_input" placeholder="例: 数字符は指の押さえ方と音の高さを表すもの、など">${state.answers.q10}</textarea>
+          <div class="btn-group">
+            <button class="primary-btn" onclick="saveQ10AndNext('q11')">次へ進む</button>
+            <button class="secondary-btn" onclick="navigate('q9')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'q11':
+        html += `
+          <span class="badge">質問 11 / 11</span>
+          <h2>体験後、数字符の理解度はどれに近いですか?</h2>
+          <div class="options-list">
+            <button class="option-btn ${state.answers.q11==='まだよく分からない'?'selected':''}" onclick="setAnswer('q11','まだよく分からない', 'result')">まだよく分からない</button>
+            <button class="option-btn ${state.answers.q11==='基本は分かった'?'selected':''}" onclick="setAnswer('q11','基本は分かった', 'result')">基本は分かった</button>
+            <button class="option-btn ${state.answers.q11==='簡単な並びなら読めそう'?'selected':''}" onclick="setAnswer('q11','簡単な並びなら読めそう', 'result')">簡単な並びなら読めそう</button>
+          </div>
+          <div class="btn-group">
+            <button class="secondary-btn" onclick="navigate('q10')">戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'result':
+        const correctCount = Object.values(state.quizScores).filter(v => v === true).length;
+        let resultType = "基本は押さえられたタイプ";
+        let resultSummary = "数字符が何を表すかは捉えられており、並びとして読む練習の段階です。つまずいた点が整理されています。";
+        let nextStepText = "短い4音の数字符の並びを自分で書き、1音ずつ指の押さえ方に置き換えてみる。";
+
+        if (correctCount <= 1 || state.answers.q11 === 'まだよく分からない') {
+          resultType = "数字符の入口に立てたタイプ";
+          resultSummary = "数字符が運指と音の高さを表す記号であることを、一緒にもう一度確認する段階です。今回つまずいた点が整理されています。ここから確認すれば大丈夫です。";
+          nextStepText = "チェックシートの「基本ルール」の画面を見返し、1番目の音の数字と指の押さえ方を1つだけ紙に書き写す。";
+        } else if (correctCount === 4 || state.answers.q11 === '簡単な並びなら読めそう') {
+          resultType = "簡単な並びなら読めるタイプ";
+          resultSummary = "基本的な数字符の対応を、短い並びで読めています。次は曲の流れの中で読む段階で、体系的に基礎を固める学び方が合いやすい状態です。";
+          nextStepText = "好きな曲や学びたい曲の最初の1フレーズを数字符で確認し、指の置き換えを試す。";
+        }
+
+        let q4Note = "";
+        if (['祭囃子', '神楽', '獅子舞'].includes(state.answers.q4)) {
+          q4Note = `\n※${state.answers.q4}の曲を学ぶ際にも、まず運指と数字符の理解を固めることが上達への確実な一歩となります。`;
+        }
+
+        const sheetText = `【数字符理解チェックシート】
+■ 判定結果: ${resultType}
+■ 体験前後の理解度: ${state.answers.q5} → ${state.answers.q11}
+■ 自分の言葉での説明: ${state.answers.q10 || '(未記入)'}
+■ つまずいたポイント: ${state.stumbledPoints.length > 0 ? state.stumbledPoints.join(', ') : '特になし'}
+■ 最初の一歩: ${nextStepText}${q4Note}`;
+
+        html += `
+          <span class="badge">判定結果</span>
+          <h2>${resultType}</h2>
+          <p>${resultSummary}</p>
+          
+          <div class="sheet-box" id="sheet-content">${sheetText}</div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="font-size:12px; color:var(--sub-text); display:block; margin-bottom:5px;">続きを知らせてほしい場合のみ入力してください(任意):</label>
+            <input type="email" id="q12_input" placeholder="メールアドレス（任意）" value="${state.answers.q12}" onchange="state.answers.q12=this.value; saveState();">
+          </div>
+
+          <div class="btn-group" style="flex-direction:column; gap:10px;">
+            <button class="primary-btn" onclick="copySheet()">チェックシートをテキストコピー</button>
+            <button class="secondary-btn" onclick="navigate('ai_memo')" style="width:100%;">AI復習メモを作成する</button>
+            <button class="secondary-btn" onclick="navigate('cta')" style="width:100%;">次の案内へ進む</button>
+          </div>
+        `;
+        break;
+
+      case 'ai_memo':
+        const aiMemoText = `以下の内容をもとに、私の篠笛の数字符の復習メモを作ってください。\n\n【私の学習状況】\n体験後の理解: ${state.answers.q11}\n私の言葉での説明: ${state.answers.q10}\nつまずいた点: ${state.stumbledPoints.join(', ')}`;
+        html += `
+          <span class="badge">AI復習メモ</span>
+          <h2>AI復習メモを作成する</h2>
+          <p>下のテキストをコピーし、ご自身のChatGPT・Claude・Geminiに貼り付けると、あなた専用の復習アドバイスがもらえます。（氏名やメールアドレスは含まれません）</p>
+          <div class="sheet-box" id="ai-memo-content">${aiMemoText}</div>
+          <div class="btn-group" style="flex-direction:column; gap:10px;">
+            <button class="primary-btn" onclick="copyAiMemo()">AI復習メモをコピー</button>
+            <button class="secondary-btn" onclick="navigate('result')" style="width:100%;">結果画面に戻る</button>
+          </div>
+        `;
+        break;
+
+      case 'cta':
+        html += `
+          <span class="badge">次の案内</span>
+          <h2>運指と譜面を先に理解する学び方を、基礎から体系的に。</h2>
+          <p>この体験で扱ったのは、数字符の入口となる基本の考え方だけです。</p>
+          <div class="note-box">
+            篠笛の演奏の基本技術と基礎知識を、オンライン、オンデマンド、オフラインのレッスンを組み合わせて3か月で学ぶ講座<strong>『${config.courseTitle}』</strong>の詳細をご覧いただけます。<br><br>
+            ※口伝のみで学ぶ場合と、譜面を使って学ぶ場合に習得にかかる時間がどう違うかについては、私の考え方としてお伝えしています。口伝の価値（地域・流派の伝承文化）は大切に尊重されるべきものです。
+          </div>
+          <div class="btn-group" style="flex-direction:column; gap:10px;">
+            <a href="${config.ctaUrl}" target="_blank" class="primary-btn" style="text-decoration:none; display:block; text-align:center;">講座の詳細を見る</a>
+            <button class="secondary-btn" onclick="navigate('result')" style="width:100%;">結果画面に戻る</button>
+          </div>
+        `;
+        break;
+    }
+
+    html += `</main>`;
+    app.innerHTML = html;
+  }
+
+  // 操作関数
+  function navigate(screen) {
+    state.currentScreen = screen;
+    window.scrollTo(0, 0);
+    render();
+  }
+
+  function setAnswer(questionKey, value, nextScreen) {
+    state.answers[questionKey] = value;
+    navigate(nextScreen);
+  }
+
+  function answerQuiz(qKey, optionIndex, isCorrect, feedbackText) {
+    state.quizScores[qKey] = isCorrect;
+    if (!isCorrect) {
+      if (!state.stumbledPoints.includes(qKey)) state.stumbledPoints.push(qKey);
+    }
+    const feedbackEl = document.getElementById(`feedback-${qKey}`);
+    if (feedbackEl) {
+      feedbackEl.className = `feedback-box ${isCorrect ? 'correct' : 'incorrect'}`;
+      feedbackEl.innerHTML = feedbackText;
+    }
+    saveState();
+  }
+
+  function renderQuizFeedback(qKey, nextScreen) {
+    const answered = state.quizScores[qKey] !== null;
+    const isCorrect = state.quizScores[qKey];
+    const feedbackStyle = answered ? 'display:block;' : 'display:none;';
+    const boxClass = isCorrect ? 'correct' : 'incorrect';
+    
+    return `
+      <div id="feedback-${qKey}" class="feedback-box ${boxClass}" style="${feedbackStyle}">
+        ${answered ? (isCorrect ? '正解です！' : '不正解です。解説を確認して次に進みましょう。') : ''}
+      </div>
+      <div style="margin-top:15px; ${answered ? 'display:block;' : 'display:none;'}">
+        <button class="primary-btn" onclick="navigate('${nextScreen}')" style="width:100%;">次へ進む</button>
+      </div>
+    `;
+  }
+
+  function saveQ10AndNext(nextScreen) {
+    const input = document.getElementById('q10_input');
+    if (input) {
+      state.answers.q10 = input.value;
+    }
+    navigate(nextScreen);
+  }
+
+  function copySheet() {
+    const text = document.getElementById('sheet-content').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("チェックシートの内容をコピーしました。");
+    }).catch(() => {
+      alert("コピーに失敗しました。手動で選択してコピーしてください。");
+    });
+  }
+
+  function copyAiMemo() {
+    const text = document.getElementById('ai-memo-content').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert("AI復習メモをコピーしました。ご自身のAIに貼り付けてご利用ください。");
+    }).catch(() => {
+      alert("コピーに失敗しました。");
+    });
+  }
+
+  // 初期化ロード
+  loadState();
+  render();
+</script>
+
+</body>
+</html>
