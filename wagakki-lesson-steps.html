@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>和楽器授業の「口伝→演奏」ステップ作成ツール</title>
+  <style>
+    :root {
+      --bg-color: #f7f4ef;       /* 生成り (Kinari) */
+      --card-bg: #ffffff;
+      --primary: #1e2a38;        /* 濃藍 (Koiai) */
+      --accent: #8b263e;         /* エンジ (Enji) */
+      --text-main: #2b2b2b;
+      --text-sub: #666666;
+      --border-color: #e0dad1;
+      --radius: 12px;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    /* プログレスバー */
+    .progress-bar {
+      height: 6px;
+      background: #e6e0d8;
+      width: 100%;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .screen {
+      display: none;
+      padding: 32px 24px;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ヒーロー画面 */
+    .hero {
+      text-align: center;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(139, 38, 62, 0.1);
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: 1.6rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    .hero p {
+      color: var(--text-sub);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+    }
+
+    /* ボタンデザイン */
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 14px 20px;
+      background-color: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+    .btn:active {
+      transform: scale(0.98);
+    }
+    .btn:hover {
+      background-color: #721e32;
+    }
+
+    /* 選択肢リスト */
+    .question-title {
+      font-size: 1.25rem;
+      color: var(--primary);
+      margin-bottom: 20px;
+      font-weight: bold;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      background: var(--bg-color);
+      border: 2px solid var(--border-color);
+      padding: 16px;
+      border-radius: 8px;
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .option-btn:hover, .option-btn.selected {
+      border-color: var(--accent);
+      background: rgba(139, 38, 62, 0.04);
+    }
+
+    /* ローディング画面 */
+    .loading-container {
+      text-align: center;
+      padding: 48px 0;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 結果画面・タイムライン */
+    .result-header {
+      border-bottom: 2px solid var(--bg-color);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+    .result-title {
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .timeline {
+      position: relative;
+      padding-left: 20px;
+      margin: 20px 0;
+      border-left: 3px solid var(--accent);
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      padding-left: 12px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -27px;
+      top: 4px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid #fff;
+    }
+    .timeline-step {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+    .timeline-heading {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    .timeline-desc {
+      font-size: 0.9rem;
+      color: var(--text-sub);
+    }
+
+    /* コピーエリア */
+    .prompt-box {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      margin: 24px 0;
+    }
+    .prompt-box h4 {
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .prompt-box p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+    }
+    .btn-secondary {
+      background-color: var(--primary);
+    }
+    .btn-secondary:hover {
+      background-color: #121a24;
+    }
+
+    /* CTAセクション */
+    .cta-section {
+      background: rgba(139, 38, 62, 0.05);
+      border: 1px dashed var(--accent);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-top: 28px;
+    }
+    .cta-section h3 {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .cta-section p {
+      font-size: 0.88rem;
+      color: var(--text-sub);
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <!-- STEP 0: スタート（ヒーロー画面） -->
+  <div class="screen active" id="screen-0">
+    <div class="hero">
+      <span class="badge">音楽教師のための和楽器指導ツール</span>
+      <h1>10分で組み立てる！<br>和楽器授業の「口伝→演奏」<br>ステップ作成ツール</h1>
+      <p>1コマの時間や総コマ数を選ぶだけ。「口唱歌（歌）」から無理なく実技・合奏へ繋げる授業ステップを自動構成します。</p>
+      <button class="btn" onclick="nextScreen(1)">無料で授業計画を作成する（約1分）</button>
+    </div>
+  </div>
+
+  <!-- STEP 1: 質問1 -->
+  <div class="screen" id="screen-1">
+    <div class="question-title">Q1. 1回の授業時間を教えてください</div>
+    <div class="options">
+      <button class="option-btn" onclick="selectOption('time', '45分（小学校）', 2)">45分（小学校）</button>
+      <button class="option-btn" onclick="selectOption('time', '50分（中学校）', 2)">50分（中学校）</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: 質問2 -->
+  <div class="screen" id="screen-2">
+    <div class="question-title">Q2. 全何回の授業（コマ数）で扱う計画ですか？</div>
+    <div class="options">
+      <button class="option-btn" onclick="selectOption('classes', '全2〜3コマ（短期・体験重視）', 3)">全2〜3コマ（短期・体験重視）</button>
+      <button class="option-btn" onclick="selectOption('classes', '全4〜5コマ（標準・合奏重視）', 3)">全4〜5コマ（標準・合奏重視）</button>
+      <button class="option-btn" onclick="selectOption('classes', '全6コマ以上（探究・発表重視）', 3)">全6コマ以上（探究・発表重視）</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: 質問3 -->
+  <div class="screen" id="screen-3">
+    <div class="question-title">Q3. 児童・生徒に一番体験させたい要素は何ですか？</div>
+    <div class="options">
+      <button class="option-btn" onclick="selectOption('focus', 'リズム合奏（太鼓・打楽器の掛け合い）', 'generate')">リズム合奏（太鼓・打楽器の掛け合い）</button>
+      <button class="option-btn" onclick="selectOption('focus', 'メロディと旋律（篠笛・口唱歌の節まわし）', 'generate')">メロディと旋律（篠笛・口唱歌の節まわし）</button>
+      <button class="option-btn" onclick="selectOption('focus', 'クラス全体のアンサンブル（声・身体・楽器）', 'generate')">クラス全体のアンサンブル（声・身体・楽器）</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: ローディング画面 -->
+  <div class="screen" id="screen-loading">
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p style="font-weight: bold; color: var(--primary);">最適な授業ステップを構成中...</p>
+    </div>
+  </div>
+
+  <!-- STEP 5: 診断結果画面 -->
+  <div class="screen" id="screen-result">
+    <div class="result-header">
+      <div class="result-title" id="res-plan-title">【短期体験型】口伝＆リズム着実ステッププラン</div>
+      <p style="font-size:0.85rem; color:var(--text-sub);" id="res-plan-desc"></p>
+    </div>
+
+    <h4 style="color: var(--primary); margin-bottom: 10px;">コマ別指導ステップ</h4>
+    <div class="timeline" id="res-timeline">
+      <!-- JavaScriptで動的生成 -->
+    </div>
+
+    <!-- AIプロンプト生成＆コピー -->
+    <div class="prompt-box">
+      <h4>自校向けの詳細指導案を作成する (AI活用)</h4>
+      <p>下のボタンで構築用プロンプトをワンタップコピーし、ChatGPTやClaude、Geminiに貼り付けることで、設備環境に合わせた指導案を作成できます。</p>
+      <button class="btn btn-secondary" onclick="copyPrompt()">AI用プロンプトをコピーする</button>
+    </div>
+
+    <!-- 次の商品・講座へのCTA -->
+    <div class="cta-section">
+      <h3>授業をさらにスムーズに進めたい先生へ</h3>
+      <p>「口唱歌」の具体的な実演動画や楽譜、指導テクニックを網羅した講座をご案内しています。</p>
+      <a href="#" class="btn" style="display:block;">和楽器指導の実践実技講座の詳細を見る</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 選択データ
+  const answers = {
+    time: '',
+    classes: '',
+    focus: ''
+  };
+
+  function updateProgress(step) {
+    const fill = document.getElementById('progress');
+    const percentages = [0, 33, 66, 100, 100, 100];
+    fill.style.width = percentages[step] + '%';
+  }
+
+  function nextScreen(screenIndex) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`screen-${screenIndex}`).classList.add('active');
+    updateProgress(screenIndex);
+  }
+
+  function selectOption(key, value, next) {
+    answers[key] = value;
+    if (next === 'generate') {
+      showLoading();
+    } else {
+      nextScreen(next);
+    }
+  }
+
+  function showLoading() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-loading').classList.add('active');
+    updateProgress(3);
+
+    setTimeout(() => {
+      renderResults();
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-result').classList.add('active');
+    }, 1500);
+  }
+
+  function renderResults() {
+    const isShort = answers.classes.includes('2〜3コマ');
+    const titleEl = document.getElementById('res-plan-title');
+    const descEl = document.getElementById('res-plan-desc');
+    const timelineEl = document.getElementById('res-timeline');
+
+    if (isShort) {
+      titleEl.textContent = "【短期体験型】口伝＆リズム着実ステッププラン";
+      descEl.textContent = `1コマ${answers.time}の限られた時間で「${answers.focus}」を中心に、口唱歌と身体表現からスピーディに和楽器演奏へ繋げる構成案です。`;
+      
+      timelineEl.innerHTML = `
+        <div class="timeline-item">
+          <div class="timeline-step">1時間目：口唱歌とボディパーカッション</div>
+          <div class="timeline-heading">声と身体でリズムを体内化</div>
+          <div class="timeline-desc">「タテンテ」「チキチン」などの口唱歌を全員で唱え、手拍子や膝叩きで『投げ合い』の間合いを体感します。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-step">2時間目：和楽器での掛け合い体験</div>
+          <div class="timeline-heading">口唱歌をそのまま楽器に置き換える</div>
+          <div class="timeline-desc">覚えた口唱歌に合わせて和楽器を鳴らします。実技の躓きを最小限に抑え、短い時間でも演奏の達成感を得られます。</div>
+        </div>
+      `;
+    } else {
+      titleEl.textContent = "【標準合奏型】「口伝→身体→演奏」段階的アンサンブルプラン";
+      descEl.textContent = `コマ数を活かし、「${answers.focus}」を深めながら最終的なクラスアンサンブルを完成させる網羅的ステップ案です。`;
+      
+      timelineEl.innerHTML = `
+        <div class="timeline-item">
+          <div class="timeline-step">1時間目：口唱歌（声での体験）</div>
+          <div class="timeline-heading">口伝ロジックで節やフレーズを完全理解</div>
+          <div class="timeline-desc">楽譜を使わず、声を出すことで和楽器特有のリズムと旋律のフレーズを共有します。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-step">2〜3時間目：身体表現とパート練習</div>
+          <div class="timeline-heading">ボディパーカッションから和楽器実技へ</div>
+          <div class="timeline-desc">手拍子や膝叩きで掛け合いを行い、パートごとの役割を把握した上で、和楽器の実技練習に移行します。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-step">4時間目以降：アンサンブルと発表・振り返り</div>
+          <div class="timeline-heading">クラス全体での「投げ合い」演奏</div>
+          <div class="timeline-desc">全体の掛け合いを合わせ、お互いの音を聴き合いながら伝統音楽のアンサンブルを完成させます。</div>
+        </div>
+      `;
+    }
+  }
+
+  function copyPrompt() {
+    const promptText = `あなたは和楽器指導に詳しい音楽教育コンサルタントです。
+以下の条件に合わせて、1時間ごとの詳細な単元指導案（導入・展開・まとめの時間配分と指導の注意点含む）を作成してください。
+
+【授業条件】
+- 1コマの時間：${answers.time}
+- 単元コマ数：${answers.classes}
+- 重視する要素：${answers.focus}
+- 指導方針：口唱歌（口伝）を活用し、「口唱歌 → ボディパーカッション → 楽器実技」の順で段階的に指導する
+
+【出力フォーマット】
+- 各時間の目標と準備物
+- 導入・展開・まとめの分単位のタイムスケジュール
+- 児童・生徒が躓きやすいポイントと教師の具体的な声かけ・指導アドバイス`;
+
+    navigator.clipboard.writeText(promptText).then(() => {
+      alert("AI用プロンプトをクリップボードにコピーしました！ChatGPTやClaude、Geminiに貼り付けてご活用ください。");
+    }).catch(err => {
+      alert("コピーに失敗しました。手動でコピーしてください。");
+    });
+  }
+</script>
+
+</body>
+</html>
