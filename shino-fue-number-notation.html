@@ -251,7 +251,7 @@
   const config = {
     providerName: "仙太郎",
     melodySample: ["ト", "イ", "ロ", "ハ"], // サンプル数字符データ（要差し替え）
-    ctaUrl: "https://example.com/course-shinobue", // 講座紹介ページURL（要差し替え）
+    ctaUrl: "", // 未確認の講座URLは設定しない
     courseTitle: "超速習!3ヶ月で学ぶ 篠笛演奏の基本技術と基礎知識"
   };
 
@@ -328,10 +328,10 @@
         html += `
           <span class="badge">祭囃子・神楽・獅子舞・篠笛・和太鼓の専門家 仙太郎</span>
           <h1>数字符、10分で「読める」に変わる。</h1>
-          <p>笛を吹く前に、まず運指と譜面を理解する。</p>
+          <p>音を出す前に、曲の流れと運指を見てみる。数字符と指打ちの入口を、教材の要点をもとに整理します。</p>
           <div class="note-box">
             数字符の意味を、短い旋律を使って「見て・選んで・確かめる」体験です。笛がなくても取り組めます。<br><br>
-            ※この体験は私の基準で説明しています。流派・地域・笛の調子によって表記が異なる場合があります。
+            ※教材の要点をもとにした無料体験です。地域・流派・笛の調子によって表記や運指は異なります。
           </div>
           <div style="font-size:12px; color:var(--sub-text); margin-bottom:20px;">所要時間: 約10分</div>
           <div class="btn-group">
@@ -424,98 +424,49 @@
         break;
 
       case 'rule':
-        const isDetailed = (state.answers.q3 === 'まったくの初めて' || state.answers.q5 === '全く分からない');
         html += `
-          <span class="badge">基本ルール解説 (${isDetailed ? '丁寧版' : '短縮版'})</span>
-          <h2>数字符の基本</h2>
-          <p>${isDetailed ? 'まずはゆっくり、数字と指の対応を確認しましょう。' : '数字符の基本構造を確認します。'}</p>
-          <div class="note-box">
-            <strong>1. 数字が示すもの</strong><br>
-            篠笛の数字符における数字は、主に<strong>「どの指穴を押さえるか」</strong>と<strong>「出る音の高さ」</strong>の対応を表しています。<br><br>
-            <strong>2. 音の高さの捉え方</strong><br>
-            数字の大小や並びによって、音が高くなるか低くなるかを読み取ります。笛を実際に吹く前に、まずはこのルールを頭に思い描くことが第一歩です。
-          </div>
-          <div class="btn-group">
-            <button class="primary-btn" onclick="navigate('q6')">確認クイズへ進む</button>
-            <button class="secondary-btn" onclick="navigate('q5')">戻る</button>
-          </div>
-        `;
+          <span class="badge">教材の要点 1</span><h2>数字を、手元の運指表と照らす</h2>
+          <p>篠笛の譜面では数字が音符として使われ、譜例の運指図と対応づけて読まれます。</p>
+          <div class="note-box"><strong>資料の図から分かること</strong><br>篠笛には歌口と7つの指穴があり、資料の運指表では数字ごとに穴の開閉が示されています。<br><br><strong>読むときのこつ</strong><br>数字だけを見て押さえる指を決めず、笛の調子や譜面の流派に合った運指表で照らします。数字符の理解と、息づかいや音色を整える演奏技術は別の練習です。</div>
+          <p style="font-size:12px;color:var(--sub-text);">地域・流派・笛の調子により表記や運指は異なります。教材の要点を学習用に言い換えており、原資料の譜面・図版は転載していません。</p>
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q6')">短い練習例へ</button><button class="secondary-btn" onclick="navigate('q5')">戻る</button></div>`;
         break;
 
       case 'q6':
         html += `
-          <span class="badge">確認クイズ 1 / 4</span>
-          <h2>数字符の「数字」は、何を表していますか?</h2>
-          <div class="options-list">
-            <button class="option-btn" onclick="answerQuiz('q6', 1, false, '曲のテンポではありません。')">曲のテンポ</button>
-            <button class="option-btn" onclick="answerQuiz('q6', 2, true, '正解です！数字は押さえる指と音の高さの対応を表します。')">押さえる指と、出る音の高さの対応</button>
-            <button class="option-btn" onclick="answerQuiz('q6', 3, false, '息の強さではなく指の押さえ方を示しています。')">息の強さ</button>
-            <button class="option-btn" onclick="answerQuiz('q6', 4, false, '曲のジャンルではありません。')">曲のジャンル</button>
-          </div>
-          ${renderQuizFeedback('q6', 'q7')}
-          <div class="btn-group">
-            <button class="secondary-btn" onclick="navigate('rule')">戻る</button>
-          </div>
-        `;
+          <span class="badge">教材の要点 2 · オリジナル練習例</span><h2>まず曲の流れを見て、運指を先に確認</h2>
+          <p>吹く前に短い並びを目で追い、手元の運指表で対応を確かめます。</p>
+          <div class="sheet-box" style="font-size:24px;text-align:center;letter-spacing:.2em;">0 1 2 3｜2 1 0</div>
+          <p>説明用に作った7音の例です。特定の伝承曲の譜面ではなく、音源再生もありません。</p>
+          <div class="note-box"><strong>練習の順序</strong><br>①数字と区切りを眺める → ②笛の調子に合う運指表で指穴を確かめる → ③一音ずつ音を出して確認する。まず運指を覚えてから音を出す方法も試せます。</div>
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q7')">指打ちの要点へ</button><button class="secondary-btn" onclick="navigate('rule')">戻る</button></div>`;
         break;
 
       case 'q7':
         html += `
-          <span class="badge">確認クイズ 2 / 4</span>
-          <h2>最初の数字に対応する運指図はどれですか?</h2>
-          <div class="svg-container">
-            <svg width="160" height="60" viewBox="0 0 160 60">
-              <rect x="10" y="25" width="140" height="10" fill="#d9c5b2" rx="5"/>
-              <circle cx="40" cy="30" r="5" fill="#8c3b2e"/>
-              <circle cx="70" cy="30" r="5" fill="#fff" stroke="#8c3b2e" stroke-width="2"/>
-              <circle cx="100" cy="30" r="5" fill="#8c3b2e"/>
-              <text x="80" y="55" font-size="10" text-anchor="middle" fill="#6b6661">運指図のサンプル</text>
-            </svg>
-          </div>
-          <div class="options-list">
-            <button class="option-btn" onclick="answerQuiz('q7', 1, false, '違います。黒丸の穴の押さえ方を確認しましょう。')">運指図A</button>
-            <button class="option-btn" onclick="answerQuiz('q7', 2, true, '正解です！指定された数字の正しい指の押さえ方です。')">運指図B</button>
-            <button class="option-btn" onclick="answerQuiz('q7', 3, false, '違います。')">運指図C</button>
-            <button class="option-btn" onclick="answerQuiz('q7', 4, false, '違います。')">運指図D</button>
-          </div>
-          ${renderQuizFeedback('q7', 'q8')}
-          <div class="btn-group">
-            <button class="secondary-btn" onclick="navigate('q6')">戻る</button>
-          </div>
-        `;
+          <span class="badge">教材の要点 3 · 指打ち</span><h2>「ハネル」と「はたく」</h2>
+          <p>祭囃子や神楽では、基本の旋律に指打ちを組み合わせ、音に動きや味わいを加える奏法が使われます。</p>
+          <div class="note-box"><strong>ハネル</strong><br>教材では、息の流れを止めず、ふさいでいる穴を一瞬開く動きとして説明されています。</div>
+          <div class="note-box"><strong>はたく</strong><br>ハネルとは別の指打ちとして譜例が示されています。具体的な指の動きや記号の読み方は、使用する譜面や教える方に確認してください。</div>
+          <p>まず通常の運指と息の流れを安定させてから試しましょう。ここでは実演音源の再生はありません。</p>
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q8')">唱え方の要点へ</button><button class="secondary-btn" onclick="navigate('q6')">戻る</button></div>`;
         break;
 
       case 'q8':
         html += `
-          <span class="badge">確認クイズ 3 / 4</span>
-          <h2>2つ目の数字は、1つ目と比べて音が高くなりますか?低くなりますか?</h2>
-          <div class="options-list">
-            <button class="option-btn" onclick="answerQuiz('q8', 1, true, '正解です！数字の進みに伴う音の高さの変化をとらえられています。')">高くなる</button>
-            <button class="option-btn" onclick="answerQuiz('q8', 2, false, '低くなるわけではありません。')">低くなる</button>
-            <button class="option-btn" onclick="answerQuiz('q8', 3, false, '同じ音ではありません。')">同じ</button>
-          </div>
-          ${renderQuizFeedback('q8', 'q9')}
-          <div class="btn-group">
-            <button class="secondary-btn" onclick="navigate('q7')">戻る</button>
-          </div>
-        `;
+          <span class="badge">教材の要点 4 · 唱え方</span><h2>「ヒャヒュヒョ」「ラリルレロ」</h2>
+          <p>教材では、指打ちを旋律に組み合わせる練習で、唱え方を指の動きと結びつけています。</p>
+          <div class="sheet-box"><strong>ヒャ・ヒュ・ヒョ</strong><br>ハネルの動きと合わせる唱え方の例。<br><br><strong>ラ・リ・ル・レ・ロ</strong><br>はたくの動きと合わせる唱え方の例。</div>
+          <div class="note-box">音名そのものではなく、動きを意識する唱え方として教材で紹介されています。実際の当て方は、使う譜面や教える方に確認してください。笛を吹かず、唱え方と指の動きだけを合わせてもかまいません。</div>
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q10')">体験を振り返る</button><button class="secondary-btn" onclick="navigate('q7')">戻る</button></div>`;
         break;
 
       case 'q9':
         html += `
-          <span class="badge">確認クイズ 4 / 4</span>
-          <h2>短い数字符の並びを、指の押さえ方に正しく置き換えたものは?</h2>
-          <div class="options-list">
-            <button class="option-btn" onclick="answerQuiz('q9', 1, false, '並びの順序を確認してみましょう。')">並びA</button>
-            <button class="option-btn" onclick="answerQuiz('q9', 2, false, '指の対応をもう一度見直してみましょう。')">並びB</button>
-            <button class="option-btn" onclick="answerQuiz('q9', 3, true, '正解です！4音の並びを正しく運指に置き換えられました。')">並びC</button>
-            <button class="option-btn" onclick="answerQuiz('q9', 4, false, '違います。')">並びD</button>
-          </div>
-          ${renderQuizFeedback('q9', 'q10')}
-          <div class="btn-group">
-            <button class="secondary-btn" onclick="navigate('q8')">戻る</button>
-          </div>
-        `;
+          <span class="badge">練習のまとめ</span><h2>数字符を読むことと、演奏すること</h2>
+          <p>数字符は曲の流れや運指を確認する手がかりになります。息の使い方、音色、間合い、地域や流派ごとの表現は、人から学ぶ価値があります。</p>
+          <div class="note-box">口伝と譜面はどちらか一方を選ぶものとは限りません。音をまね、数字符で記録し、分からない箇所を人に尋ねる組み合わせもあります。</div>
+          <div class="btn-group"><button class="primary-btn" onclick="navigate('q10')">振り返りへ</button><button class="secondary-btn" onclick="navigate('q8')">戻る</button></div>`;
         break;
 
       case 'q10':
@@ -547,16 +498,15 @@
         break;
 
       case 'result':
-        const correctCount = Object.values(state.quizScores).filter(v => v === true).length;
         let resultType = "基本は押さえられたタイプ";
         let resultSummary = "数字符が何を表すかは捉えられており、並びとして読む練習の段階です。つまずいた点が整理されています。";
         let nextStepText = "短い4音の数字符の並びを自分で書き、1音ずつ指の押さえ方に置き換えてみる。";
 
-        if (correctCount <= 1 || state.answers.q11 === 'まだよく分からない') {
+        if (state.answers.q11 === 'まだよく分からない') {
           resultType = "数字符の入口に立てたタイプ";
           resultSummary = "数字符が運指と音の高さを表す記号であることを、一緒にもう一度確認する段階です。今回つまずいた点が整理されています。ここから確認すれば大丈夫です。";
           nextStepText = "チェックシートの「基本ルール」の画面を見返し、1番目の音の数字と指の押さえ方を1つだけ紙に書き写す。";
-        } else if (correctCount === 4 || state.answers.q11 === '簡単な並びなら読めそう') {
+        } else if (state.answers.q11 === '簡単な並びなら読めそう') {
           resultType = "簡単な並びなら読めるタイプ";
           resultSummary = "基本的な数字符の対応を、短い並びで読めています。次は曲の流れの中で読む段階で、体系的に基礎を固める学び方が合いやすい状態です。";
           nextStepText = "好きな曲や学びたい曲の最初の1フレーズを数字符で確認し、指の置き換えを試す。";
@@ -564,7 +514,7 @@
 
         let q4Note = "";
         if (['祭囃子', '神楽', '獅子舞'].includes(state.answers.q4)) {
-          q4Note = `\n※${state.answers.q4}の曲を学ぶ際にも、まず運指と数字符の理解を固めることが上達への確実な一歩となります。`;
+          q4Note = `\n※${state.answers.q4}の曲を学ぶ際にも、まず運指と数字符の理解を固めることが学び方を整理する一つの手がかりになります。`;
         }
 
         const sheetText = `【数字符理解チェックシート】
@@ -579,14 +529,7 @@
           <h2>${resultType}</h2>
           <p>${resultSummary}</p>
           
-          <div class="sheet-box" id="sheet-content">${sheetText}</div>
-
-          <div style="margin-bottom: 20px;">
-            <label style="font-size:12px; color:var(--sub-text); display:block; margin-bottom:5px;">続きを知らせてほしい場合のみ入力してください(任意):</label>
-            <input type="email" id="q12_input" placeholder="メールアドレス（任意）" value="${state.answers.q12}" onchange="state.answers.q12=this.value; saveState();">
-          </div>
-
-          <div class="btn-group" style="flex-direction:column; gap:10px;">
+          <div class="sheet-box" id="sheet-content">${sheetText}</div>\n<div class="btn-group" style="flex-direction:column; gap:10px;">
             <button class="primary-btn" onclick="copySheet()">チェックシートをテキストコピー</button>
             <button class="secondary-btn" onclick="navigate('ai_memo')" style="width:100%;">AI復習メモを作成する</button>
             <button class="secondary-btn" onclick="navigate('cta')" style="width:100%;">次の案内へ進む</button>
@@ -618,7 +561,7 @@
             ※口伝のみで学ぶ場合と、譜面を使って学ぶ場合に習得にかかる時間がどう違うかについては、私の考え方としてお伝えしています。口伝の価値（地域・流派の伝承文化）は大切に尊重されるべきものです。
           </div>
           <div class="btn-group" style="flex-direction:column; gap:10px;">
-            <a href="${config.ctaUrl}" target="_blank" class="primary-btn" style="text-decoration:none; display:block; text-align:center;">講座の詳細を見る</a>
+            <p>講座名: <strong>『${config.courseTitle}』</strong><br>確認できる講座内容・受講形式・日程・料金・申込先は、このページに設定されていません。情報がそろうまでは、ここから申込みはできません。</p>
             <button class="secondary-btn" onclick="navigate('result')" style="width:100%;">結果画面に戻る</button>
           </div>
         `;
